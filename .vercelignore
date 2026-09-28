@@ -1,0 +1,14 @@
+.git/
+.venv/
+__pycache__/
+*.pyc
+*.sample
+test_*.py
+run.bat
+COMMIT_EDITMSG
+HEAD*
+config
+description
+index
+main*
+download*

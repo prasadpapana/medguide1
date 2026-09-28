@@ -35,8 +35,8 @@ MedGuide is a patient-centered AI application designed to translate complex medi
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/<your-username>/<repo-name>.git
-cd MedicalreportSimplifier
+git clone https://github.com/prasadpapana/medguide1.git
+cd medguide1
 ```
 
 ### 2. Install Dependencies
@@ -60,6 +60,17 @@ GEMINI_API_KEY=your_gemini_api_key_here
 python app.py
 ```
 Open your browser and navigate to: **http://127.0.0.1:5000**
+
+### Deploy to Vercel
+
+Install the [Vercel CLI](https://vercel.com/docs/cli), then run these commands from the project folder:
+```bash
+vercel login
+vercel
+```
+To deploy a production build, run `vercel --prod`. Add `GEMINI_API_KEY` under the project's Vercel **Settings → Environment Variables** to enable AI features. Do not commit API keys to the repository.
+
+The application serves the Flask UI from `templates/`. Static files remain in `static/` for local Flask runs and are mirrored in `public/static/` for Vercel's CDN.
 
 ---
 
