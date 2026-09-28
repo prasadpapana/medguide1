@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MedGuide - Medical Report Language Classifier & AI Assistant</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <!-- Header -->
+        <header class="app-header">
+            <h1>🩺 MedGuide</h1>
+            <h2>Medical Report Language Classifier</h2>
+            <p class="subtitle">
+                An AI-powered medical language understanding assistant that converts difficult medical text into easy-to-understand language.
+            </p>
+        </header>
+
+        <!-- 1. Medical Report Language Simplifier -->
+        <section class="card input-section">
+            <div class="section-header">
+                <h3>📄 Medical Report Simplifier</h3>
+                <span class="badge">Reports & Lab Values</span>
+            </div>
+            <p class="section-desc">
+                Paste your medical report, doctor explanation, or lab values below. You can also upload a <code>.txt</code> or <code>.pdf</code> report.
+            </p>
+
+            <div class="file-upload-bar">
+                <label for="reportFileInput" class="file-upload-btn">
+                    📎 Upload Report (.txt / .pdf)
+                </label>
+                <input type="file" id="reportFileInput" accept=".txt,.pdf" onchange="uploadReportFile()">
+                <span id="reportFileName" class="file-name-text">No file chosen</span>
+            </div>
+
+            <textarea
+                id="report"
+                placeholder="Enter your medical report, doctor explanation, lab value (e.g., Hemoglobin: 9 g/dL), or medical term here..."></textarea>
+
+            <div class="button-group">
+                <button id="simplifyBtn" onclick="simplifyReport()">
+                    ⚡ Simplify Report
+                </button>
+            </div>
+        </section>
+
+        <!-- Result Section -->
+        <section class="card result-section">
+            <div class="section-header">
+                <h3>📖 Simple Explanation</h3>
+                <span id="sourceBadge" class="badge badge-light">Educational Summary</span>
+            </div>
+
+            <div id="result">
+                Your simplified explanation will appear here.
+            </div>
+
+            <div class="button-group">
+                <button id="speakBtn" onclick="speakResult()">
+                    🔊 Speak Explanation
+                </button>
+                <button id="copyBtn" onclick="copyExplanation()">
+                    📋 Copy Explanation
+                </button>
+                <button id="downloadBtn" onclick="downloadExplanation()">
+                    💾 Download Explanation
+                </button>
+            </div>
+        </section>
+
+        <!-- 2. AI Medical Assistant Chatbot -->
+        <section class="card chat-section">
+            <div class="section-header">
+                <h3>🤖 AI Medical Assistant</h3>
+                <span class="badge">Interactive Chatbot</span>
+            </div>
+            <p class="section-desc">
+                Ask questions about medical terms, doctor statements, or lab terminology in simple English.
+            </p>
+
+            <div class="chat-container">
+                <div id="chatMessages" class="chat-messages">
+                    <div class="chat-bubble ai-bubble">
+                        <div class="bubble-header">MedGuide Assistant</div>
+                        <div class="bubble-body">
+                            Hello! I am MedGuide, your medical language explanation assistant. You can ask me questions like <em>"What does anemia mean?"</em>, <em>"What is thrombocytopenia?"</em>, or <em>"What is hemoglobin?"</em>.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chat-input-bar">
+                    <input
+                        type="text"
+                        id="chatInput"
+                        placeholder="Ask a medical-language question... (e.g., What does elevated cholesterol mean?)"
+                        onkeydown="if(event.key === 'Enter') sendChatMessage()">
+                    
+                    <button id="chatSendBtn" onclick="sendChatMessage()">
+                        Send
+                    </button>
+                    <button id="chatVoiceBtn" onclick="chatVoiceInput()" title="Speak your question">
+                        🎤
+                    </button>
+                    <button id="clearChatBtn" onclick="clearChat()" title="Clear chat history">
+                        🧹 Clear
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. Prescription Image Analyzer -->
+        <section class="card prescription-section">
+            <div class="section-header">
+                <h3>📷 Prescription Image Analyzer</h3>
+                <span class="badge">Vision & Extraction</span>
+            </div>
+            <p class="section-desc">
+                Upload a clear photo or scan of a prescription (JPG, PNG, WEBP). MedGuide will extract visible medicine information into a structured table and provide safe, simple explanations.
+            </p>
+
+            <div class="prescription-upload-box">
+                <div class="file-upload-bar">
+                    <label for="prescriptionFileInput" class="file-upload-btn">
+                        📸 Choose Prescription Image
+                    </label>
+                    <input type="file" id="prescriptionFileInput" accept=".jpg,.jpeg,.png,.webp" onchange="previewPrescriptionImage()">
+                    <span id="prescriptionFileName" class="file-name-text">No file chosen</span>
+                </div>
+
+                <div id="imagePreviewContainer" class="image-preview-container" style="display: none;">
+                    <img id="prescriptionPreview" src="" alt="Prescription Preview">
+                </div>
+
+                <button id="analyzePrescriptionBtn" onclick="analyzePrescription()" style="display: none;">
+                    🔍 Analyze Prescription
+                </button>
+            </div>
+
+            <!-- Prescription Results -->
+            <div id="prescriptionResult" style="display: none;" class="prescription-result-box">
+                <h4>Extracted Medicine Information</h4>
+                <div class="table-responsive">
+                    <table class="prescription-table">
+                        <thead>
+                            <tr>
+                                <th>Medicine</th>
+                                <th>Strength</th>
+                                <th>Frequency</th>
+                                <th>Timing</th>
+                                <th>Duration</th>
+                            </tr>
+                        </thead>
+                        <tbody id="prescriptionTableBody">
+                            <!-- Populated dynamically via JS -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div id="clarityNotice" class="clarity-notice"></div>
+
+                <div class="medicine-explanations">
+                    <h4>Medicine Explanations</h4>
+                    <div id="medicineExplCards"></div>
+                </div>
+
+                <div class="prescription-disclaimer">
+                    ⚠️ <strong>Important:</strong> Prescription information extracted by AI should be verified with a doctor or pharmacist before use. Never guess or alter prescribed dosages.
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. General Food & Nutrition Information -->
+        <section class="card food-section">
+            <div class="section-header">
+                <h3>🍎 General Food Information</h3>
+                <span class="badge">Nutrition Education</span>
+            </div>
+            <p class="section-desc">
+                Explore general educational healthy-eating principles relevant to medical terminology.
+            </p>
+
+            <div class="food-query-bar">
+                <input
+                    type="text"
+                    id="foodTopicInput"
+                    placeholder="Enter health topic (e.g. Heart health, High cholesterol, General balanced eating)..."
+                    onkeydown="if(event.key === 'Enter') fetchFoodSuggestions()">
+                <button id="foodBtn" onclick="fetchFoodSuggestions()">
+                    🥗 Show Food Suggestions
+                </button>
+            </div>
+
+            <div class="quick-topics">
+                <span>Quick Topics:</span>
+                <button type="button" class="chip-btn" onclick="setAndFetchFood('Heart health and cholesterol')">Heart Health</button>
+                <button type="button" class="chip-btn" onclick="setAndFetchFood('General balanced wellness')">Balanced Eating</button>
+                <button type="button" class="chip-btn" onclick="setAndFetchFood('Hydration and kidney health')">Hydration</button>
+            </div>
+
+            <div id="foodResult" class="food-result-box" style="display: none;">
+                <h4 id="foodResultTitle">General Nutrition Guidance</h4>
+                <div id="foodResultBody" class="food-body"></div>
+                <div class="food-disclaimer">
+                    ℹ️ <em>These are general food and nutrition suggestions, not a personalized medical diet. Food can support general health, but it should not be considered a cure. For a personalized diet plan, consult a qualified doctor or registered dietitian.</em>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. Voice Assistant Section -->
+        <section class="card voice-section">
+            <div class="section-header">
+                <h3>🎤 Voice Assistant</h3>
+                <span class="badge">Speech-to-Text</span>
+            </div>
+            <p class="section-desc">
+                Click the button and dictate your medical report or question into the text area.
+            </p>
+
+            <button id="voiceBtn" onclick="startVoice()">
+                🎤 Start Voice Input
+            </button>
+
+            <p id="voiceText"></p>
+        </section>
+
+        <!-- 6. Safety Notice & Medical Disclaimer -->
+        <footer class="warning">
+            <p>
+                ⚠️ <strong>Safety Notice:</strong> This application is designed to explain medical language and organize information. It does <strong>not</strong> diagnose diseases, prescribe medicines, recommend medication dosage changes, or replace a qualified healthcare professional. For medical diagnosis, personalized treatment, or emergency symptoms, always seek advice from a doctor or local emergency medical services.
+            </p>
+        </footer>
+
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</body>
+
+</html>

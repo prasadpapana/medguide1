@@ -1,0 +1,11 @@
+# ==============================================================================
+# MedGuide - Environment Configuration
+# IMPORTANT: Never commit this file to GitHub or share it publicly.
+# This file is listed in .gitignore for your protection.
+# ==============================================================================
+
+# Google Gemini API Key
+GEMINI_API_KEY=AQ.Ab8RN6KVhVP4R5UEWQ6KmAkXEWf8M0BU4zVw0AYuQCGM6SnkWw
+
+# Server Port (default 5000)
+PORT=5000
